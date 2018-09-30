@@ -30,30 +30,25 @@
                 </tr>
             </thead>
             <tbody >  
-                
+                <tr v-for="item in content">
+                    <td>
+                        <input type="checkbox">
+                    </td>
+                    <td>{{item.id}}</td>
+                    <td>{{item.question}}</td>
+                    <td>{{item.choiceA}}</td>
+                    <td>{{item.choiceB}}</td>
+                    <td>{{item.choiceC}}</td>
+                    <td>{{item.choiceD}}</td>
+                    <td>{{item.right_answer}}</td>
+                    <td>
+                       <span title="删除"><i class="fa fa-times" ></i></span> 
+                       <span title="编辑"><i class="fa fa-pencil" ></i></span>
+                    </td>
+                </tr>
             </tbody>
         </table> 
-        <div class="d-flex justify-content-between" id="page">
-            <div class="btn-group limit">
-                <button type="button" class="btn btn-default" >5</button>
-                <button type="button" class="btn btn-default" >10</button>
-                <button type="button" class="btn btn-default" >20</button>
-            </div>
-            <ul class="pagination  pagination-custom">
-                <li class="page-item"><a class="page-link" href="#">上一页</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">下一页</a></li>
-            </ul>
-            <div class="total">
-                <span>共 <b class="total-page">10</b> 页</span>
-                <span>,  到第</span>
-                <input id="input-jmppage"  min="1">
-                <span>页</span>
-                <button id="submit-jmppage" class="btn btn-sm btn-info" >确定</button>
-            </div>
-        </div>            
+        <pagination v-bind:count="count" :current-page='current' :limit="limit" v-on:pagenum="pageNum" @pagelimit="pageLimit"></pagination>         
 
         <!-- 修改模态框 -->
         <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" data-backdrop="static">
@@ -209,6 +204,47 @@
     </div>
 </template>
 <script>
-   
+   import pagination from '@/components/page' //引用pageVue子组件
+   export default{
+        data(){
+            return{
+                content:[],
+                count: 1,    //总页数
+                limit: 10,    // 每页显示条数
+                current: 1  // 当前的页数
+            }
+        },
+        components: {
+          'pagination': pagination,
+        },
+        methods:{
+            pageNum:function(num){ //num参数就是通过pageVue子组件中setCurrent方法传过来的
+                this.current = num;
+                var url = 'http://wx-admin.git/index.php/Home/Admin/show_question?page='+num+'&limit='+this.limit;
+                this.getData(url);
+            },
+            pageLimit:function(limit){
+                this.limit = limit;
+                this.current = 1;
+                var url = 'http://wx-admin.git/index.php/Home/Admin/show_question?page='+this.current+'&limit='+limit;
+                this.getData(url)
+            },
+            getData:function(url){
+                this.$http.get(url).then((data)=>{
+                    this.count= data.body[0].count;
+                    this.content= data.body[1].content;
+                })
+            }
+        },
+        mounted: function(){
+            this.$http.get('http://wx-admin.git/index.php/Home/Admin/show_question').then((data)=>{
+                this.count= data.body[0].count;
+                this.content= data.body[1].content;
+            })
+            $('#isSearh').click(function(){
+                console.log(2)
+            })
+        }   
+   }
     
 </script>

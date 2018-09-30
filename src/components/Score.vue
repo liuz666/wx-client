@@ -5,31 +5,31 @@
             <div class="line">
                 <h4><i class="glyphicon glyphicon-star"></i> 成绩概览</h4>
             </div>
-            <form class="form-horizontal" id="searchForm" >
+            <form id="searchForm" >
                 <div class="row">
                     <div class="col-sm-4">
-                        <div class="form-group">
-                            <label for="" class="col-sm-4 control-label">周期数</label>
+                        <div class="form-group row">
+                            <label for="" class="col-sm-4 col-form-label text-right">周期数</label>
                             <div class="col-sm-6">
                                 <select  id="cyclesNum" class="form-control" name="cycles_num">
-                                    
+                                    <option value=""></option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-4">
-                        <div class="form-group">
-                            <label for="" class="col-sm-4 control-label">部门</label>
+                        <div class="form-group row">
+                            <label for="" class="col-sm-4 col-form-label text-right">部门</label>
                             <div class="col-sm-6">
                                 <select  id="dep" class="form-control" name="dep_id">
-                                    
+                                        <option value=""></option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-4">
-                        <div class="form-group">
-                            <label for="" class="col-sm-4 control-label">姓名</label>
+                        <div class="form-group row">
+                            <label for="" class="col-sm-4 col-form-label text-right">姓名</label>
                             <div class="col-sm-6">
                                 <input type="text" class="form-control" name="name" >
                             </div>
@@ -38,26 +38,28 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-4">
-                        <div class="form-group">
-                            <label for="" class="col-sm-4 control-label">考试日期</label>
+                        <div class="form-group row">
+                            <label for="" class="col-sm-4 col-form-label text-right">考试日期</label>
                             <div class="col-sm-6">
                                 <input type="text" class="form-control" name="time" >
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="text-center row" style="margin-top:15px;">
-                    <span class="btn btn-info" id="search">立即搜索</span>
+                <div class="text-center">
+                    <span class="btn btn-info btn-sm" id="search" @click="pageSearch()">立即搜索{{isSearch}}</span>
                 </div>
             </form>
             <div class="row features">
-                <div class="col-sm-12">
+                <div class="col-sm-8">
                     <span class="btn btn-danger btn-sm" id="handleExport">导出excel</span>
-                    <span class="btn btn-info btn-sm" id="isSearh">搜索
-                        <i class="glyphicon glyphicon-search"></i>
-                    </span>
-                    <span class="btn btn-primary" id="clearSearch">清除搜索</span>
+                    <span class="btn btn-primary btn-sm" id="clearSearch" v-show="isSearch">清除搜索</span>
                 </div> 
+                <div class="col-sm-4 text-right">
+                    <span class="btn btn-info btn-sm" id="isSearh" title="搜索">
+                        <i class="fa fa-search"></i>
+                    </span>
+                </div>
             </div>
         </div>
         <!--信息展示-->
@@ -78,45 +80,30 @@
                 </tr>
             </thead>
             <tbody >  
-                <tr v-for="item in user">
-                    <td>item</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                <tr v-for="item in content">    
+                    <td>
+                        <input type="checkbox">
+                    </td>
+                    <td>{{item.id}}</td>
+                    <td>{{item.dep}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.right_num}}</td>
+                    <td>{{item.err_num}}</td>
+                    <td>{{item.cycles_num}}</td>
+                    <td>{{item.time}}</td>
                 </tr>
             </tbody>
         </table> 
-        <div class="d-flex justify-content-between"  id="page">
-            <div class="btn-group limit">
-                <button type="button" class="btn btn-default" >5</button>
-                <button type="button" class="btn btn-default" >10</button>
-                <button type="button" class="btn btn-default" >20</button>
-            </div>
-            <ul class="pagination pagination-custom">
-                  <li class="page-item"><a class="page-link" href="#">上一页</a></li>
-                  <li class="page-item"><a class="page-link" href="#">1</a></li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">3</a></li>
-                  <li class="page-item"><a class="page-link" href="#">下一页</a></li>
-            </ul>
-            <div class="total ">
-                <span>共 <b class="total-page">1</b> 页</span>
-                <span>,  到第</span>
-                <input id="input-jmppage"  min="1">
-                <span>页</span>
-                <button id="submit-jmppage" class="btn btn-sm btn-info" >确定</button>
-            </div>
-        </div>
+        <!-- v-bind:total="total" 动态传值,父组件的值传递给pageVue子组件 -->
+        <pagination v-bind:count="count" :current-page='current' :limit="limit" v-on:pagenum="pageNum" @pagelimit="pageLimit"></pagination> 
         <!-- 导出筛选 -->
         <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" data-backdrop="static">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                         <h4 class="modal-title active">导出excel</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        
                     </div>
                     <div class="modal-body">
                         <form  class="form-horizontal" id="exportForm">
@@ -157,26 +144,66 @@
 </template>
 <!-- 2、行为 处理逻辑 -->
 <script>
+    import pagination from '@/components/page' //引用pageVue子组件
     export default{
-        data() {
+        // data:function(){
+        //     return{
+
+        //     }
+        // },
+        data() { //es6写法 功能同上面写法是一样的
             return {
-                user :[],
-                message: 'Vue的生命周期'
+                message: 'Vue的生命周期',
+                content:[],
+                count: 1,    //总页数
+                limit: 10,    // 每页显示条数
+                current: 1,  // 当前的页数
+                isSearch: false
             };
         },
-        methods:{
+        components: {
+          'pagination': pagination,
         },
-        beforeCreate:function(){
-            // this.$http.get('http://jsonplaceholder.typicode.com/users').then((data)=>{
-            //     console.log(data)
-            // })
-            this.$http.get('http://wx-admin.git/index.php/Home/Score/show').then((data)=>{
-                console.log(data)
-            })
+        methods:{
+            pageNum:function(num){ //num参数就是通过子组件中setCurrent方法传过来的
+                this.current = num;
+                var url = 'http://wx-admin.git/index.php/Home/Score/show?page='+num+'&limit='+this.limit;
+                this.getData(url);
+            },
+            pageLimit:function(limit){
+                this.limit = limit;
+                this.current = 1;
+                var url = 'http://wx-admin.git/index.php/Home/Score/show?page='+this.current+'&limit='+limit;
+                this.getData(url)
+            },
+            pageSearch:function(){
+                this.isSearch = true;
+            },
+            getData:function(url){
+                this.$http.get(url).then((data)=>{
+                    this.count= data.body[0].count;
+                    this.content= data.body[1].content;
+                })
+            }
+        },
+        computed:{
+
         },
         mounted: function(){
+            this.$http.get('http://wx-admin.git/index.php/Home/Score/show').then((data)=>{
+                this.count= data.body[0].count;
+                this.content= data.body[1].content;
+            })
+            $('#handleExport').click(function(){
+                $('#exportModal').modal('show')
+            })
             $('#isSearh').click(function(){
-                console.log(2)
+                var status = $('#searchForm').css('display');
+                if(status == 'block'){
+                    $('#searchForm').fadeOut("slow");
+                }else{
+                    $('#searchForm').fadeIn("slow");
+                }
             })
         }   
         /*,

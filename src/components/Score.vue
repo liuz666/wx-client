@@ -107,34 +107,34 @@
                     </div>
                     <div class="modal-body">
                         <form  class="form-horizontal" id="exportForm">
-                            <div class="form-group">
-                                <label  class="col-sm-2 control-label">部门</label>
-                                <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label  class="col-sm-3 control-label text-right">部门</label>
+                                <div class="col-sm-8">
                                     <select name="dep_id" id="export_dep" class="form-control"></select>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label  class="col-sm-2 control-label">姓名</label>
-                                <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label  class="col-sm-3 control-label text-right">姓名</label>
+                                <div class="col-sm-8">
                                     <input type="text"  class="form-control" name="name" >
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label  class="col-sm-2 control-label">期数</label>
-                                <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label  class="col-sm-3 control-label text-right">期数</label>
+                                <div class="col-sm-8">
                                     <select name="cycles_num" id="export_cyclesNum" class="form-control"></select>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label  class="col-sm-2 control-label">考试日期</label>
-                                <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label  class="col-sm-3 control-label text-right">考试日期</label>
+                                <div class="col-sm-8">
                                     <input type="date"  class="form-control" name="time" >
                                 </div>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-blue btn-sm" id="export">导出</button>
+                        <button type="button" class="btn btn-blue btn-sm" id="export" v-on:click="exports()">导出</button>
                         <button type="button" class="btn btn-sm" data-dismiss="modal">关闭</button>
                     </div>
                 </div>
@@ -167,23 +167,37 @@
         methods:{
             pageNum:function(num){ //num参数就是通过子组件中setCurrent方法传过来的
                 this.current = num;
-                var url = 'http://wx-admin.git/index.php/Home/Score/show?page='+num+'&limit='+this.limit;
+                let url = 'http://wx-admin.git/index.php/Home/Score/show?page='+num+'&limit='+this.limit;
                 this.getData(url);
             },
             pageLimit:function(limit){
                 this.limit = limit;
                 this.current = 1;
-                var url = 'http://wx-admin.git/index.php/Home/Score/show?page='+this.current+'&limit='+limit;
+                let url = 'http://wx-admin.git/index.php/Home/Score/show?page='+this.current+'&limit='+limit;
                 this.getData(url)
             },
             pageSearch:function(){
                 this.isSearch = true;
+                let params = $('#searchForm').serializeObject();
+                params = JSON.stringify(params);
+                params = base64encode(utf16to8(params)); //base64加密
+                let url = 'http://wx-admin.git/index.php/Home/Score/show?page=1&limit='+this.limit+'&search='+params;
+                this.getData(url) 
             },
             getData:function(url){
                 this.$http.get(url).then((data)=>{
                     this.count= data.body[0].count;
                     this.content= data.body[1].content;
                 })
+            },
+            exports:function(){
+                let val = $('#exportForm').serializeObject();
+                val = JSON.stringify(val);
+                val = utf16to8(val);
+                val = base64encode(val);
+                location.href = "http://wx-admin.git/index.php/Home/Score/export?" + "search=" + val;
+                $("#exportModal").modal("hide");
+                
             }
         },
         computed:{

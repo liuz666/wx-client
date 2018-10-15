@@ -8,6 +8,7 @@ import VueResource from 'vue-resource';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 import 'font-awesome/css/font-awesome.css'
+import './utils/utils.js'
 Vue.use(VueResource);
 
 Vue.config.productionTip = false

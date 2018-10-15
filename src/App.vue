@@ -22,12 +22,8 @@
 </template>
 
 <script>
-    import Score from './components/Score' // 1、引入 score组件 
     export default {
       name: 'App',
-      components:{ //2、注册引用进来的组件
-        'score' : Score
-      }
     }
 </script>
 
